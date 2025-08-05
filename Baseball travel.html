@@ -1,0 +1,824 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Taiwan Baseball Stadium Travel Finder</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+        
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 20px;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.2);
+            overflow: hidden;
+            backdrop-filter: blur(10px);
+        }
+        
+        .header {
+            background: linear-gradient(45deg, #ff6b6b, #ffa500);
+            color: white;
+            padding: 30px;
+            text-align: center;
+        }
+        
+        .header h1 {
+            font-size: 2.5em;
+            margin-bottom: 10px;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+        }
+        
+        .header p {
+            font-size: 1.1em;
+            opacity: 0.9;
+        }
+        
+        .form-section {
+            padding: 40px;
+        }
+        
+        .form-group {
+            margin-bottom: 25px;
+        }
+        
+        label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 600;
+            color: #333;
+            font-size: 1.1em;
+        }
+        
+        select, input {
+            width: 100%;
+            padding: 15px;
+            border: 2px solid #e0e0e0;
+            border-radius: 12px;
+            font-size: 1em;
+            transition: all 0.3s ease;
+            background: white;
+        }
+        
+        select:focus, input:focus {
+            outline: none;
+            border-color: #667eea;
+            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+            transform: translateY(-2px);
+        }
+        
+        .btn {
+            background: linear-gradient(45deg, #667eea, #764ba2);
+            color: white;
+            border: none;
+            padding: 18px 40px;
+            border-radius: 12px;
+            font-size: 1.2em;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            width: 100%;
+            margin-top: 20px;
+        }
+        
+        .btn:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 10px 25px rgba(102, 126, 234, 0.3);
+        }
+        
+        .btn:active {
+            transform: translateY(-1px);
+        }
+        
+        .weather-section {
+            background: linear-gradient(135deg, #74b9ff 0%, #0984e3 100%);
+            color: white;
+            padding: 25px;
+            border-radius: 15px;
+            margin: 20px 0;
+            box-shadow: 0 10px 25px rgba(116, 185, 255, 0.3);
+        }
+        
+        .weather-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 15px;
+            margin-top: 20px;
+        }
+        
+        .weather-card {
+            background: rgba(255, 255, 255, 0.2);
+            backdrop-filter: blur(10px);
+            border-radius: 12px;
+            padding: 20px;
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            transition: transform 0.3s ease;
+        }
+        
+        .weather-card:hover {
+            transform: translateY(-5px);
+        }
+        
+        .weather-card h4 {
+            font-size: 1.1em;
+            margin-bottom: 10px;
+            display: flex;
+            align-items: center;
+        }
+        
+        .weather-icon {
+            font-size: 1.5em;
+            margin-right: 10px;
+        }
+        
+        .weather-details {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin: 10px 0;
+        }
+        
+        .temperature {
+            font-size: 2em;
+            font-weight: bold;
+        }
+        
+        .weather-info {
+            text-align: right;
+        }
+        
+        .weather-info span {
+            display: block;
+            opacity: 0.9;
+            margin: 2px 0;
+            font-size: 0.9em;
+        }
+        
+        .results {
+            margin-top: 30px;
+            padding: 25px;
+            background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+            border-radius: 15px;
+            display: none;
+        }
+        
+        .route-option {
+            background: white;
+            padding: 20px;
+            margin-bottom: 15px;
+            border-radius: 12px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+            border-left: 5px solid #667eea;
+            transition: transform 0.3s ease;
+        }
+        
+        .route-option:hover {
+            transform: translateX(5px);
+        }
+        
+        .route-title {
+            font-size: 1.3em;
+            font-weight: 700;
+            color: #333;
+            margin-bottom: 10px;
+            display: flex;
+            align-items: center;
+        }
+        
+        .route-details {
+            color: #666;
+            line-height: 1.6;
+            margin-bottom: 10px;
+        }
+        
+        .route-time {
+            background: #667eea;
+            color: white;
+            padding: 5px 12px;
+            border-radius: 20px;
+            font-size: 0.9em;
+            font-weight: 600;
+            display: inline-block;
+        }
+        
+        .route-cost {
+            background: #ff6b6b;
+            color: white;
+            padding: 5px 12px;
+            border-radius: 20px;
+            font-size: 0.9em;
+            font-weight: 600;
+            display: inline-block;
+            margin-left: 10px;
+        }
+        
+        .stadium-info {
+            background: linear-gradient(135deg, #a8edea 0%, #fed6e3 100%);
+            padding: 20px;
+            border-radius: 12px;
+            margin-bottom: 20px;
+        }
+        
+        .stadium-info h3 {
+            color: #333;
+            margin-bottom: 10px;
+            font-size: 1.4em;
+        }
+        
+        .stadium-info p {
+            color: #666;
+            line-height: 1.6;
+        }
+
+        .refresh-btn {
+            background: rgba(255, 255, 255, 0.2);
+            color: white;
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            padding: 10px 20px;
+            border-radius: 8px;
+            font-size: 0.9em;
+            cursor: pointer;
+            margin: 10px auto;
+            display: block;
+            transition: all 0.3s ease;
+        }
+
+        .refresh-btn:hover {
+            background: rgba(255, 255, 255, 0.3);
+            transform: translateY(-2px);
+        }
+        
+        @media (max-width: 600px) {
+            .container {
+                margin: 10px;
+                border-radius: 15px;
+            }
+            
+            .header h1 {
+                font-size: 2em;
+            }
+            
+            .form-section {
+                padding: 25px;
+            }
+            
+            .weather-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>⚾ Taiwan Baseball Stadium Travel Finder</h1>
+            <p>Find the best route to your favorite baseball stadium in Taiwan</p>
+        </div>
+        
+        <div class="form-section">
+            <div class="form-group">
+                <label for="startLocation">Starting Location:</label>
+                <input type="text" id="startLocation" placeholder="Enter your starting point (e.g., Taipei Main Station, Taoyuan Airport)">
+            </div>
+            
+            <div class="form-group">
+                <label for="stadium">Select Baseball Stadium:</label>
+                <select id="stadium">
+                    <option value="">Choose a stadium...</option>
+                    <option value="taoyuan">Taoyuan International Baseball Stadium (桃園國際棒球場)</option>
+                    <option value="tianmu">Tianmu Baseball Stadium (天母棒球場)</option>
+                    <option value="xinzhuang">Xinzhuang Baseball Stadium (新莊棒球場)</option>
+                    <option value="tainan">Tainan Municipal Baseball Stadium (台南市立棒球場)</option>
+                    <option value="kaohsiung">Kaohsiung National Stadium (高雄國家體育場)</option>
+                    <option value="taichung">Taichung Intercontinental Baseball Stadium (台中洲際棒球場)</option>
+                    <option value="hualien">Hualien County Stadium (花蓮縣立棒球場)</option>
+                </select>
+            </div>
+            
+            <div class="form-group">
+                <label for="travelMode">Preferred Travel Mode:</label>
+                <select id="travelMode">
+                    <option value="all">Show all options</option>
+                    <option value="public">Public Transportation</option>
+                    <option value="driving">Driving</option>
+                    <option value="taxi">Taxi/Uber</option>
+                </select>
+            </div>
+            
+            <button class="btn" onclick="findRoute()">🚀 Find Best Route</button>
+            
+            <div class="weather-section">
+                <h3 style="margin-bottom: 15px; text-align: center;">🌤️ Weather at All Baseball Stadiums</h3>
+                <p style="text-align: center; opacity: 0.9; margin-bottom: 5px;" id="weatherTime">Loading game time weather...</p>
+                <p style="text-align: center; opacity: 0.8; font-size: 0.9em; margin-bottom: 20px;">Auto-updates for game schedules</p>
+                <div class="weather-grid" id="weatherGrid"></div>
+                <button class="refresh-btn" onclick="updateWeather()">🔄 Refresh Weather</button>
+                <div style="text-align: center; margin-top: 10px; opacity: 0.8; font-size: 0.85em;">
+                    <span id="lastUpdated">Click refresh to load weather data</span>
+                </div>
+            </div>
+            
+            <div id="results" class="results"></div>
+        </div>
+    </div>
+
+    <script>
+        // Stadium data with coordinates for weather
+        const stadiums = {
+            taoyuan: {
+                name: "Taoyuan International Baseball Stadium",
+                chineseName: "桃園國際棒球場",
+                address: "No. 1, Sandeh Rd., Zhongshan Dist., Taoyuan City",
+                description: "Home to the Rakuten Monkeys, this modern stadium opened in 2009 and is located in Taoyuan's Qingpu area.",
+                lat: 24.989,
+                lon: 121.313
+            },
+            tianmu: {
+                name: "Tianmu Baseball Stadium",
+                chineseName: "天母棒球場",
+                address: "No. 77, Zhongcheng Rd., Shilin Dist., Taipei City",
+                description: "The oldest professional baseball stadium in Taiwan, home to Brother Elephants and located in Taipei's Tianmu district.",
+                lat: 25.117,
+                lon: 121.526
+            },
+            xinzhuang: {
+                name: "Xinzhuang Baseball Stadium",
+                chineseName: "新莊棒球場",
+                address: "No. 99, Zhonghua Rd., Xinzhuang Dist., New Taipei City",
+                description: "Modern stadium completed in 2017, home to the Fubon Guardians in New Taipei City.",
+                lat: 25.035,
+                lon: 121.452
+            },
+            tainan: {
+                name: "Tainan Municipal Baseball Stadium",
+                chineseName: "台南市立棒球場",
+                address: "No. 262, Sec. 1, Jiankang Rd., South Dist., Tainan City",
+                description: "Historic stadium serving as home ground for Uni-President Lions, located in southern Taiwan.",
+                lat: 22.984,
+                lon: 120.202
+            },
+            kaohsiung: {
+                name: "Kaohsiung National Stadium",
+                chineseName: "高雄國家體育場",
+                address: "No. 2, Shisheng Rd., Zuoying Dist., Kaohsiung City",
+                description: "Multi-purpose stadium that hosts major baseball games and events in Taiwan's southern port city.",
+                lat: 22.687,
+                lon: 120.301
+            },
+            taichung: {
+                name: "Taichung Intercontinental Baseball Stadium",
+                chineseName: "台中洲際棒球場",
+                address: "No. 99, Chongde Rd., Beitun Dist., Taichung City",
+                description: "International-standard stadium opened in 2006, hosts CTBC Brothers and international games.",
+                lat: 24.150,
+                lon: 120.701
+            },
+            hualien: {
+                name: "Hualien County Stadium",
+                chineseName: "花蓮縣立棒球場",
+                address: "No. 6, Minyi St., Hualien City, Hualien County",
+                description: "Scenic stadium located on Taiwan's east coast, surrounded by beautiful mountain views.",
+                lat: 23.993,
+                lon: 121.590
+            }
+        };
+
+        const routes = {
+            taoyuan: {
+                public: [
+                    {
+                        title: "🚆 HSR + Bus",
+                        details: "Take HSR to Taoyuan Station → Transfer to Bus 206 → Stadium",
+                        time: "45-60 minutes",
+                        cost: "NT$200-400"
+                    },
+                    {
+                        title: "🚇 MRT + Bus",
+                        details: "Airport MRT to A19 Taoyuan Stadium → Bus 5089 or walk 15 minutes",
+                        time: "60-80 minutes",
+                        cost: "NT$100-150"
+                    }
+                ],
+                driving: [
+                    {
+                        title: "🚗 National Highway",
+                        details: "National Highway 1 → Exit at Taoyuan Interchange → Follow signs to stadium",
+                        time: "30-50 minutes",
+                        cost: "NT$80-120 (tolls + gas)"
+                    }
+                ],
+                taxi: [
+                    {
+                        title: "🚕 Direct Taxi",
+                        details: "Direct taxi ride from your location to the stadium",
+                        time: "30-50 minutes",
+                        cost: "NT$800-1500"
+                    }
+                ]
+            },
+            tianmu: {
+                public: [
+                    {
+                        title: "🚇 MRT Red Line",
+                        details: "Take MRT Red Line to Shilin Station → Bus Red 12 or walk 20 minutes",
+                        time: "30-45 minutes",
+                        cost: "NT$40-60"
+                    },
+                    {
+                        title: "🚌 Direct Bus",
+                        details: "Bus 220, 267, 645, or Red 12 directly to Tianmu area",
+                        time: "40-60 minutes",
+                        cost: "NT$30-45"
+                    }
+                ],
+                driving: [
+                    {
+                        title: "🚗 City Roads",
+                        details: "Via Zhongshan N. Rd → Tianmu W. Rd → Stadium parking",
+                        time: "25-40 minutes",
+                        cost: "NT$50-100 (parking + gas)"
+                    }
+                ],
+                taxi: [
+                    {
+                        title: "🚕 Direct Taxi",
+                        details: "Direct taxi ride to Tianmu Baseball Stadium",
+                        time: "20-35 minutes",
+                        cost: "NT$300-600"
+                    }
+                ]
+            },
+            xinzhuang: {
+                public: [
+                    {
+                        title: "🚇 MRT Orange Line",
+                        details: "MRT Orange Line to Xinpu Station → Bus 918 or walk 25 minutes",
+                        time: "40-60 minutes",
+                        cost: "NT$50-70"
+                    },
+                    {
+                        title: "🚌 Bus Connection",
+                        details: "Bus 635, 918, or F203 to stadium vicinity",
+                        time: "50-70 minutes",
+                        cost: "NT$30-50"
+                    }
+                ],
+                driving: [
+                    {
+                        title: "🚗 Highway Route",
+                        details: "National Highway 1 → Wugu Interchange → Local roads to stadium",
+                        time: "30-45 minutes",
+                        cost: "NT$60-100"
+                    }
+                ],
+                taxi: [
+                    {
+                        title: "🚕 Direct Taxi",
+                        details: "Direct taxi to Xinzhuang Baseball Stadium",
+                        time: "25-40 minutes",
+                        cost: "NT$400-800"
+                    }
+                ]
+            },
+            tainan: {
+                public: [
+                    {
+                        title: "🚆 TRA + Bus",
+                        details: "TRA to Tainan Station → Bus 6 or 18 to stadium area",
+                        time: "20-35 minutes",
+                        cost: "NT$25-40"
+                    },
+                    {
+                        title: "🚆 HSR + Transfer",
+                        details: "HSR to Tainan Station → Shuttle bus to TRA → Local bus to stadium",
+                        time: "60-80 minutes",
+                        cost: "NT$50-80"
+                    }
+                ],
+                driving: [
+                    {
+                        title: "🚗 Highway Route",
+                        details: "National Highway 1 → Tainan Interchange → City roads to stadium",
+                        time: "15-30 minutes",
+                        cost: "NT$40-80"
+                    }
+                ],
+                taxi: [
+                    {
+                        title: "🚕 Local Taxi",
+                        details: "Taxi from city center or station to stadium",
+                        time: "15-25 minutes",
+                        cost: "NT$200-400"
+                    }
+                ]
+            },
+            kaohsiung: {
+                public: [
+                    {
+                        title: "🚇 MRT Red Line",
+                        details: "MRT Red Line to Zuoying Station → Walk 15 minutes or bus",
+                        time: "30-45 minutes",
+                        cost: "NT$35-50"
+                    },
+                    {
+                        title: "🚆 HSR + MRT",
+                        details: "HSR to Zuoying → MRT to stadium area",
+                        time: "20-30 minutes",
+                        cost: "NT$40-60"
+                    }
+                ],
+                driving: [
+                    {
+                        title: "🚗 City Route",
+                        details: "Via Boai Rd → Shisheng Rd → Stadium parking",
+                        time: "20-35 minutes",
+                        cost: "NT$50-100"
+                    }
+                ],
+                taxi: [
+                    {
+                        title: "🚕 Direct Taxi",
+                        details: "Direct taxi to Kaohsiung National Stadium",
+                        time: "15-30 minutes",
+                        cost: "NT$250-500"
+                    }
+                ]
+            },
+            taichung: {
+                public: [
+                    {
+                        title: "🚆 TRA + Bus",
+                        details: "TRA to Taichung Station → Bus 6 or 9 to stadium",
+                        time: "45-60 minutes",
+                        cost: "NT$30-50"
+                    },
+                    {
+                        title: "🚆 HSR + Bus",
+                        details: "HSR to Taichung → Bus 161 or taxi to stadium",
+                        time: "50-70 minutes",
+                        cost: "NT$60-100"
+                    }
+                ],
+                driving: [
+                    {
+                        title: "🚗 Highway Route",
+                        details: "National Highway 1 → Taichung Interchange → Chongde Rd to stadium",
+                        time: "25-40 minutes",
+                        cost: "NT$60-120"
+                    }
+                ],
+                taxi: [
+                    {
+                        title: "🚕 Direct Taxi",
+                        details: "Taxi from city center or HSR station",
+                        time: "25-40 minutes",
+                        cost: "NT$400-700"
+                    }
+                ]
+            },
+            hualien: {
+                public: [
+                    {
+                        title: "🚆 TRA + Walk",
+                        details: "TRA to Hualien Station → Walk 20 minutes or local bus",
+                        time: "25-40 minutes",
+                        cost: "NT$20-35"
+                    },
+                    {
+                        title: "🚌 Local Bus",
+                        details: "Hualien Bus routes 105, 1129 to stadium vicinity",
+                        time: "30-45 minutes",
+                        cost: "NT$25-40"
+                    }
+                ],
+                driving: [
+                    {
+                        title: "🚗 Scenic Route",
+                        details: "Highway 9 → Hualien city roads → Stadium with mountain views",
+                        time: "15-25 minutes",
+                        cost: "NT$30-60"
+                    }
+                ],
+                taxi: [
+                    {
+                        title: "🚕 Local Taxi",
+                        details: "Taxi from station or city center",
+                        time: "10-20 minutes",
+                        cost: "NT$150-300"
+                    }
+                ]
+            }
+        };
+
+        let weatherData = {};
+
+        // Initialize on page load
+        document.addEventListener('DOMContentLoaded', function() {
+            updateGameTimeDisplay();
+            generateSampleWeatherData();
+        });
+
+        function getGameTime() {
+            const now = new Date();
+            const day = now.getDay();
+            
+            if (day === 0 || day === 6) { // Weekend
+                return { time: '5:00 PM', type: 'Weekend Game Time' };
+            } else if (day >= 2 && day <= 5) { // Weekdays (Tue-Fri)
+                return { time: '6:00 PM', type: 'Weekday Game Time' };
+            } else { // Monday
+                return { time: '6:00 PM', type: 'Game Time' };
+            }
+        }
+
+        function updateGameTimeDisplay() {
+            const gameTime = getGameTime();
+            const now = new Date();
+            const timeString = now.toLocaleDateString('en-US', { 
+                weekday: 'long', 
+                year: 'numeric', 
+                month: 'long', 
+                day: 'numeric' 
+            });
+            
+            document.getElementById('weatherTime').textContent = 
+                `${timeString} • ${gameTime.type} (${gameTime.time})`;
+        }
+
+        function generateSampleWeatherData() {
+            // Generate realistic weather data based on Taiwan's August climate
+            const conditions = [
+                { condition: 'Partly Cloudy', icon: '⛅', tempRange: [26, 30] },
+                { condition: 'Light Rain', icon: '🌦️', tempRange: [24, 28] },
+                { condition: 'Thunderstorms', icon: '⛈️', tempRange: [25, 29] },
+                { condition: 'Overcast', icon: '☁️', tempRange: [25, 29] },
+                { condition: 'Heavy Rain', icon: '🌧️', tempRange: [23, 27] },
+                { condition: 'Cloudy', icon: '☁️', tempRange: [26, 30] },
+                { condition: 'Partly Sunny', icon: '🌤️', tempRange: [27, 31] }
+            ];
+
+            const cities = ['Taoyuan', 'Taipei (Tianmu)', 'New Taipei (Xinzhuang)', 'Tainan', 'Kaohsiung', 'Taichung', 'Hualien'];
+            const stadiumKeys = Object.keys(stadiums);
+
+            weatherData = {};
+            stadiumKeys.forEach((key, index) => {
+                const weather = conditions[index];
+                const temp = Math.floor(Math.random() * (weather.tempRange[1] - weather.tempRange[0] + 1)) + weather.tempRange[0];
+                const humidity = Math.floor(Math.random() * 20) + 70; // 70-90%
+                const windSpeed = Math.floor(Math.random() * 15) + 5; // 5-20 km/h
+                const windDirs = ['N', 'NE', 'E', 'SE', 'S', 'SW', 'W', 'NW'];
+                const windDir = windDirs[Math.floor(Math.random() * windDirs.length)];
+                const rainChance = weather.condition.includes('Rain') || weather.condition.includes('Thunder') ? 
+                    Math.floor(Math.random() * 30) + 60 : Math.floor(Math.random() * 40) + 10;
+
+                weatherData[key] = {
+                    city: cities[index],
+                    temp: `${temp}°C`,
+                    condition: weather.condition,
+                    icon: weather.icon,
+                    humidity: `${humidity}%`,
+                    wind: `${windSpeed} km/h ${windDir}`,
+                    rain: `${rainChance}%`
+                };
+            });
+
+            displayWeatherData();
+            document.getElementById('lastUpdated').textContent = 
+                `Updated: ${new Date().toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit' })} (Taiwan Time)`;
+        }
+
+        function updateWeather() {
+            document.getElementById('weatherGrid').innerHTML = `
+                <div style="text-align: center; color: rgba(255,255,255,0.8); grid-column: 1 / -1;">
+                    <div style="font-size: 2em; margin-bottom: 10px;">🔄</div>
+                    <div>Updating weather data...</div>
+                </div>
+            `;
+            
+            // Simulate API call delay
+            setTimeout(() => {
+                generateSampleWeatherData();
+            }, 1000);
+        }
+
+        function displayWeatherData() {
+            const weatherGrid = document.getElementById('weatherGrid');
+            let weatherHTML = '';
+            
+            Object.keys(weatherData).forEach(stadiumKey => {
+                const weather = weatherData[stadiumKey];
+                const stadium = stadiums[stadiumKey];
+                
+                weatherHTML += `
+                    <div class="weather-card">
+                        <h4>
+                            <span class="weather-icon">${weather.icon}</span>
+                            ${stadium.name.split(' ')[0]} ${stadium.name.split(' ')[1] || ''}
+                        </h4>
+                        <div class="weather-details">
+                            <div class="temperature">${weather.temp}</div>
+                            <div class="weather-info">
+                                <span>${weather.condition}</span>
+                                <span>💧 ${weather.humidity}</span>
+                                <span>💨 ${weather.wind}</span>
+                                <span>🌧️ ${weather.rain}</span>
+                            </div>
+                        </div>
+                    </div>
+                `;
+            });
+            
+            weatherGrid.innerHTML = weatherHTML;
+        }
+
+        function findRoute() {
+            const startLocation = document.getElementById('startLocation').value.trim();
+            const stadium = document.getElementById('stadium').value;
+            const travelMode = document.getElementById('travelMode').value;
+            const resultsDiv = document.getElementById('results');
+
+            if (!startLocation || !stadium) {
+                alert('Please enter your starting location and select a stadium.');
+                return;
+            }
+
+            let html = `<div class="stadium-info">
+                <h3>${stadiums[stadium].name} (${stadiums[stadium].chineseName})</h3>
+                <p><strong>Address:</strong> ${stadiums[stadium].address}</p>
+                <p>${stadiums[stadium].description}</p>
+            </div>`;
+
+            html += `<h3 style="margin-bottom: 20px; color: #333;">🗺️ Recommended Routes from ${startLocation}:</h3>`;
+
+            const stadiumRoutes = routes[stadium];
+            
+            if (travelMode === 'all' || travelMode === 'public') {
+                stadiumRoutes.public.forEach(route => {
+                    html += createRouteCard(route);
+                });
+            }
+            
+            if (travelMode === 'all' || travelMode === 'driving') {
+                stadiumRoutes.driving.forEach(route => {
+                    html += createRouteCard(route);
+                });
+            }
+            
+            if (travelMode === 'all' || travelMode === 'taxi') {
+                stadiumRoutes.taxi.forEach(route => {
+                    html += createRouteCard(route);
+                });
+            }
+
+            html += `<div style="margin-top: 20px; padding: 15px; background: #f8f9fa; border-radius: 10px; border-left: 4px solid #28a745;">
+                <strong>💡 Pro Tips:</strong><br>
+                • Check game schedules for potential traffic delays<br>
+                • Arrive 30-60 minutes early for parking<br>
+                • Consider weather conditions for your route<br>
+                • Download offline maps as backup
+            </div>`;
+
+            resultsDiv.innerHTML = html;
+            resultsDiv.style.display = 'block';
+            resultsDiv.scrollIntoView({ behavior: 'smooth' });
+        }
+
+        function createRouteCard(route) {
+            return `<div class="route-option">
+                <div class="route-title">${route.title}</div>
+                <div class="route-details">${route.details}</div>
+                <div>
+                    <span class="route-time">⏱️ ${route.time}</span>
+                    <span class="route-cost">💰 ${route.cost}</span>
+                </div>
+            </div>`;
+        }
+
+        // Add enter key support
+        document.getElementById('startLocation').addEventListener('keypress', function(e) {
+            if (e.key === 'Enter') {
+                findRoute();
+            }
+        });
+
+        // Auto-update weather every 30 minutes
+        setInterval(generateSampleWeatherData, 1800000);
+        
+        // Update game time display every minute
+        setInterval(updateGameTimeDisplay, 60000);
+    </script>
+</body>
+</html>>
+                • Check game schedules for potential traffic delays<br
